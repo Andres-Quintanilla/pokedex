@@ -9,9 +9,6 @@ const app = express();
 const port = 3000;
 const db = require("./models");
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
-
 app.use(cors({
     origin: ['http://localhost:5173'],
     optionsSuccessStatus: 200

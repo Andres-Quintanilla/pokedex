@@ -64,34 +64,39 @@ exports.obtenerPorId = async (req, res) => {
 };
 
 exports.crear = async (req, res) => {
-    const file = req.files?.imagen;
     const datos = req.body;
 
-    if(!file){
-        return res.status(400).send({imagen: "La imagen es obligatoria"});
-    }
-    
     const errores = validarPokemon(datos);
+    if (errores) return res.status(400).send(errores);
 
-    if(errores){
-        return res.status(400).send(errores);
+    const existente = await db.pokemon.findOne({ where: { nombre: datos.nombre } });
+    if (existente) {
+        return res.status(400).send({ nombre: "Ya existe un Pokémon con ese nombre" });
     }
 
-    const extension = file.name.split('.').pop();
-    const nombreArchivo = `${datos.nombre.toLowerCase().replace(/\s+/g, "_")}.${extension}`;
-    const rutaRelativa = `/upload/${nombreArchivo}`;
-    const rutaAbsoluta = path.join(__dirname, "..", "uploads", nombreArchivo);
-    
-    try{
-        await file.mv(rutaAbsoluta);
+    const rutaOrigen = datos.imagen;
+    if (!fs.existsSync(rutaOrigen)) {
+        return res.status(400).send({ imagen: "La ruta de la imagen no existe" });
+    }
+
+    try {
+        const extension = path.extname(rutaOrigen);
+        const nombreArchivo = `${datos.nombre.toLowerCase().replace(/\s+/g, "_")}${extension}`;
+        const rutaDestino = path.join(__dirname, "..", "uploads", nombreArchivo);
+        const rutaRelativa = `/uploads/${nombreArchivo}`;
+
+        fs.copyFileSync(rutaOrigen, rutaDestino);
+
         datos.imagen = rutaRelativa;
 
-        const nuevoPokemon = await db.pokemon.create(req.body);
+        const nuevoPokemon = await db.pokemon.create(datos);
         res.status(201).send(nuevoPokemon);
-    }catch (error){
-        res.status(500).send({message: "Error al crear el Pokemon"});
+    } catch (error) {
+        console.error("ERROR al copiar imagen:", error);
+        res.status(500).send({ message: "Error al crear el Pokemon", error });
     }
 };
+
 
 exports.actualizarTodo = async (req, res) => {
     const { id } = req.params;
@@ -213,7 +218,7 @@ exports.eliminar = async (req, res) => {
 
     try {
         await existente.destroy();
-        res.status(204).send('');
+        res.status(204).send({message: "Pokemon eliminado con exito"});
     }catch (error){
         res.status(500).send({message: "Error al eliminar el Pokemon"})
     }
