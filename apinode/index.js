@@ -21,7 +21,7 @@ app.use(fileUpload({
 }));
 
 db.sequelize.sync({
-     // force: true // drop tables and recreate
+      force: true // drop tables and recreate
 }).then(() => {
     console.log("Base de datos sincronizada");
 });

@@ -104,7 +104,19 @@ module.exports = (sequelize) => {
                 min: 0,
                 max: 31
             }
-        }
+        },
+        equipoId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        posicion: {
+            type: DataTypes.INTEGER,
+            allowNull: true, 
+            validate: {
+                min: 0,
+                max: 5
+            }
+        },
     });
 
     return PokemonPersonalizado;
