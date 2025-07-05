@@ -1,4 +1,4 @@
-const { DataTypes, STRING } = require("sequelize");
+const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
     const Movimiento = sequelize.define("Movimiento", {
@@ -19,6 +19,10 @@ module.exports = (sequelize) => {
                 'Hada', 'Hielo', 'Lucha', 'Normal', 'Planta', 'Psíquico', 'Roca',
                 'Siniestro', 'Tierra', 'Veneno', 'Volador']]
             }
+        },
+        categoria:{
+            type: DataTypes.ENUM("fisico", "especial", "estado"),
+            allowNull: false
         },
         potencia: {
             type: DataTypes.INTEGER,

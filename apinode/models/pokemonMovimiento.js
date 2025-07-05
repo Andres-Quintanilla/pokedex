@@ -3,7 +3,8 @@ const { DataTypes } = require("sequelize");
 module.exports = (sequelize) => {
     const PokemonMovimiento = sequelize.define("PokemonMovimiento", {
     },{
-        timestamps: false
+        timestamps: false,
+        tableName: "PokemonMovimientos"
     });
     
     return PokemonMovimiento;

@@ -8,7 +8,10 @@ const movimiento = require("./movimiento")(sequelize);
 const pokemon = require("./pokemon")(sequelize);
 const pokemonPersonalizado = require("./pokemonPersonalizado")(sequelize);
 const usuario = require("./usuario")(sequelize);
+const tipo = require("./tipo")(sequelize);
 const pokemonMovimiento = require("./pokemonMovimiento")(sequelize);
+const pokemonTipo = require("./pokemonTipo")(sequelize);
+const naturaleza = require("./naturaleza")(sequelize);
 
 usuario.hasMany(authToken, { foreignKey: "usuarioId"});
 authToken.belongsTo(usuario, { foreignKey: "usuarioId"});
@@ -16,11 +19,11 @@ authToken.belongsTo(usuario, { foreignKey: "usuarioId"});
 usuario.hasMany(equipo, { foreignKey: "usuarioId"});
 equipo.belongsTo(usuario, { foreignKey: "usuarioId"});
 
-equipo.hasMany(pokemonPersonalizado, { foreignKey: "equipoId"});
-pokemonPersonalizado.belongsTo(equipo, { foreignKey: "equipoId"});
+equipo.hasMany(pokemonPersonalizado, { foreignKey: "equipoId", as: "pokemonesPersonalizados"});
+pokemonPersonalizado.belongsTo(equipo, { foreignKey: "equipoId", as: "equipo"});
 
-pokemon.hasMany(pokemonPersonalizado, { foreignKey: "pokemonId"});
-pokemonPersonalizado.belongsTo(pokemon, { foreignKey: "pokemonId"});
+pokemon.hasMany(pokemonPersonalizado, { foreignKey: "pokemonId", as: "pokemonesPersonalizados"});
+pokemonPersonalizado.belongsTo(pokemon, { foreignKey: "pokemonId", as: "pokemon"});
 
 habilidad.hasMany(pokemonPersonalizado, { foreignKey: "habilidadId"});
 pokemonPersonalizado.belongsTo(habilidad, { foreignKey: "habilidadId"});
@@ -30,6 +33,12 @@ pokemonPersonalizado.belongsTo(item, { foreignKey: "itemId"});
 
 movimiento.belongsToMany(pokemonPersonalizado, { through: pokemonMovimiento, foreignKey: "movimientoId"});
 pokemonPersonalizado.belongsToMany(movimiento, { through: pokemonMovimiento, foreignKey: "pokemonPersonalizadoId"});
+
+pokemon.belongsToMany(tipo, { through: pokemonTipo, foreignKey: "pokemonId"});
+tipo.belongsToMany(pokemon, { through: pokemonTipo, foreignKey: "tipoId"});
+
+pokemonPersonalizado.belongsTo(naturaleza, { foreignKey: "naturalezaId", as: "naturaleza" });
+naturaleza.hasMany(pokemonPersonalizado, { foreignKey: "naturalezaId", as: "pokemonesPersonalizados" });
 
 module.exports = {
     authToken,
@@ -41,6 +50,8 @@ module.exports = {
     pokemonPersonalizado,
     usuario,
     pokemonMovimiento,
+    pokemonTipo,
+    naturaleza,
     sequelize,
     Sequelize: sequelize.Sequelize
 };

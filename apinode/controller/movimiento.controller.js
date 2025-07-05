@@ -37,7 +37,7 @@ exports.listar = async (req, res) => {
         const movimiento = await db.movimiento.findAll();
         res.send(movimiento);
     } catch (error) {
-        res.status(500).send({message: "Erro al obtener los movimientos"})
+        res.status(500).send({message: "Error al obtener los movimientos"})
     }
 };
 
@@ -117,7 +117,7 @@ exports.actualizarUnoPorUno = async (req, res) => {
     const movimiento = await db.movimiento.findByPk(id);
 
     if(!movimiento) {
-        return res.status(404).send({message: "Movimoento no encontrado"});
+        return res.status(404).send({message: "Movimiento no encontrado"});
     }
 
     const errores = {};
@@ -174,6 +174,6 @@ exports.eliminar = async (req, res) => {
         await movimiento.destroy();
         res.status(204).send({message: "Movimiento eliminado con éxito"});
     } catch (error) {
-        res.status(500).send({message: "Erro al eliminar el movimiento"});
+        res.status(500).send({message: "Error al eliminar el movimiento"});
     }
 };

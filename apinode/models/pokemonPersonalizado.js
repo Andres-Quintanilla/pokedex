@@ -9,17 +9,6 @@ module.exports = (sequelize) => {
                 len: [1, 50]
             }
         },
-        naturaleza: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                isIn: [[
-                    'Activa', 'Afable', 'Agitada', 'Alegre', 'Alocada', 'Amable', 'Audaz',
-                    'Cauta', 'Dócil', 'Firme', 'Floja', 'Fuerte', 'Grosera', 'Huraña',
-                    'Ingenua', 'Mansa', 'Miedosa', 'Modesta', 'Osada', 'Pícara', 'Plácida',
-                    'Rara', 'Serena', 'Seria', 'Tímida']]
-            }
-        },
         ev_hp: {
             type: DataTypes.INTEGER,
             defaultValue: 0,

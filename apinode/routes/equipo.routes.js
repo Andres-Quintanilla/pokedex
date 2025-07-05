@@ -5,6 +5,6 @@ module.exports = app => {
 
     router.post("/", requireUser, equipoController.crear);
     router.get("/", requireUser, equipoController.listar);
-    app.use("equipos", router);
+    app.use("/equipos", router);
 
 };

@@ -14,6 +14,8 @@ module.exports = (sequelize) => {
             type: DataTypes.TEXT,
             allowNull: true
         }
+    },{
+        tableName: "Habilidades"
     });
 
     return Habilidad;

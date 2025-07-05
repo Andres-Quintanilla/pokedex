@@ -14,26 +14,6 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        tipo1: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                isIn: [[
-                'Acero', 'Agua', 'Bicho', 'Dragón', 'Eléctrico', 'Fantasma', 'Fuego',
-                'Hada', 'Hielo', 'Lucha', 'Normal', 'Planta', 'Psíquico', 'Roca',
-                'Siniestro', 'Tierra', 'Veneno', 'Volador']]
-            }
-        },
-        tipo2: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            validate: {
-                isIn: [[
-                'Acero', 'Agua', 'Bicho', 'Dragón', 'Eléctrico', 'Fantasma', 'Fuego',
-                'Hada', 'Hielo', 'Lucha', 'Normal', 'Planta', 'Psíquico', 'Roca',
-                'Siniestro', 'Tierra', 'Veneno', 'Volador']]
-            }
-        },
         hp: {
             type: DataTypes.INTEGER,
             allowNull: false,

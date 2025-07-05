@@ -6,4 +6,6 @@ module.exports = app => {
     require("./item.routes")(app);
     require("./habilidad.routes")(app);
     require("./movimiento.routes")(app);
+    require("./tipo.routes")(app);
+    require("./pokemonPersonalizado.routes")(app);
 }

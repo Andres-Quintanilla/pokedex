@@ -28,9 +28,10 @@ exports.listar  = async (req, res) => {
             where : { usuarioId },
             include: {
                 model: db.pokemonPersonalizado,
+                as: "pokemonesPersonalizados",
                 include: [
                     {
-                        model: db.pokemon, attributes: ['nombre', 'imagen', 'tipo1', 'tipo2']
+                        model: db.pokemon, as: "pokemon", attributes: ['nombre', 'imagen']
                     }
                 ]
             }
