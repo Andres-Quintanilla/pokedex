@@ -223,3 +223,167 @@ exports.eliminar = async (req, res) => {
         res.status(500).send({message: "Error al eliminar el Pokemon"})
     }
 };
+
+exports.obtenerMovimientosPorPokemon = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const pokemon = await db.pokemon.findByPk(id, {
+            include: {
+                model: db.movimiento,
+                through: { attributes: [] },
+                include: {
+                    model: db.tipo,
+                    attributes: ["id", "nombre", "color"]
+                }
+            }
+        });
+
+        if (!pokemon) {
+            return res.status(404).json({ message: "Pokémon no encontrado" });
+        }
+
+        res.json(pokemon.movimientos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al obtener movimientos del Pokémon" });
+    }
+};
+
+exports.asignarMovimientos = async (req, res) => {
+    const { id } = req.params;
+    const { movimientos } = req.body; 
+
+    if (!Array.isArray(movimientos) || movimientos.length === 0) {
+        return res.status(400).json({ message: "Debes enviar un arreglo de IDs de movimientos válidos." });
+    }
+
+    try {
+        const pokemon = await db.pokemon.findByPk(id);
+        if (!pokemon) {
+            return res.status(404).json({ message: "Pokémon no encontrado." });
+        }
+
+        const movimientosExistentes = await db.movimiento.findAll({
+            where: { id: movimientos }
+        });
+
+        if (movimientosExistentes.length !== movimientos.length) {
+            return res.status(400).json({ message: "Uno o más IDs de movimientos no son válidos." });
+        }
+
+        await pokemon.setMovimientos(movimientos); 
+
+        res.status(200).json({ message: "Movimientos asignados correctamente al Pokémon." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al asignar movimientos al Pokémon." });
+    }
+};
+
+
+exports.obtenerHabilidadesPorPokemon = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const pokemon = await db.pokemon.findByPk(id, {
+            include: {
+                model: db.habilidad,
+                as: "habilidades",
+                through: { attributes: [] }
+            }
+        });
+
+        if (!pokemon) {
+            return res.status(404).json({ message: "Pokémon no encontrado" });
+        }
+
+        res.json(pokemon.habilidades); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al obtener habilidades del Pokémon" });
+    }
+};
+
+exports.asignarHabilidades = async (req, res) => {
+    const { id } = req.params;
+    const { habilidades } = req.body; 
+
+    if (!Array.isArray(habilidades) || habilidades.length === 0) {
+        return res.status(400).json({ message: "Debes enviar un arreglo de IDs de habilidades válidas." });
+    }
+
+    try {
+        const pokemon = await db.pokemon.findByPk(id);
+        if (!pokemon) {
+            return res.status(404).json({ message: "Pokémon no encontrado." });
+        }
+
+        const habilidadesExistentes = await db.habilidad.findAll({
+            where: { id: habilidades }
+        });
+
+        if (habilidadesExistentes.length !== habilidades.length) {
+            return res.status(400).json({ message: "Uno o más IDs de habilidades no son válidos." });
+        }
+
+        await pokemon.setHabilidades(habilidades);
+
+        res.status(200).json({ message: "Habilidades asignadas correctamente al Pokémon." });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al asignar habilidades al Pokémon." });
+    }
+};
+
+exports.obtenerTiposPorPokemon = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const pokemon = await db.pokemon.findByPk(id, {
+            include: {
+                model: db.tipo,
+                through: { attributes: [] }
+            }
+        });
+
+        if (!pokemon) {
+            return res.status(404).json({ message: "Pokémon no encontrado" });
+        }
+
+        res.json(pokemon.tipos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al obtener los tipos del Pokémon" });
+    }
+};
+
+exports.asignarTipos = async (req, res) => {
+    const { id } = req.params;
+    const { tipo1, tipo2 } = req.body;
+
+    try {
+        const pokemon = await db.pokemon.findByPk(id);
+
+        if (!pokemon) {
+            return res.status(404).json({ message: "Pokémon no encontrado" });
+        }
+
+        // Validar tipos
+        const tipos = await db.tipo.findAll({
+            where: {
+                nombre: [tipo1, tipo2].filter(Boolean)
+            }
+        });
+
+        if (tipos.length === 0) {
+            return res.status(400).json({ message: "Los tipos proporcionados no son válidos" });
+        }
+
+        await pokemon.setTipos(tipos);
+        res.json({ message: "Tipos asignados correctamente" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al asignar tipos al Pokémon" });
+    }
+};

@@ -8,4 +8,5 @@ module.exports = app => {
     require("./movimiento.routes")(app);
     require("./tipo.routes")(app);
     require("./pokemonPersonalizado.routes")(app);
+    require("./naturaleza.routes")(app);
 }

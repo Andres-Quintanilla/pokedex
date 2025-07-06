@@ -10,5 +10,11 @@ module.exports = app => {
     router.put("/:id", requireUser, requireAdmin, pokemonController.actualizarTodo);
     router.patch("/:id", requireUser, requireAdmin, pokemonController.actualizarUnoPorUno);
     router.delete("/:id", requireUser, requireAdmin, pokemonController.eliminar);
+    router.get("/:id/movimientos", requireUser ,pokemonController.obtenerMovimientosPorPokemon);
+    router.get("/:id/habilidades", requireUser ,pokemonController.obtenerHabilidadesPorPokemon);
+    router.post("/:id/habilidades", requireUser, requireAdmin, pokemonController.asignarHabilidades);
+    router.post("/:id/movimientos", requireUser, requireAdmin, pokemonController.asignarMovimientos);
+    router.get("/:id/tipos", requireUser, pokemonController.obtenerTiposPorPokemon);
+    router.post("/:id/tipos", requireUser, requireAdmin, pokemonController.asignarTipos);
     app.use("/pokemones", router);
 };

@@ -37,6 +37,9 @@ pokemonPersonalizado.belongsToMany(movimiento, { through: pokemonMovimiento, for
 pokemon.belongsToMany(tipo, { through: pokemonTipo, foreignKey: "pokemonId"});
 tipo.belongsToMany(pokemon, { through: pokemonTipo, foreignKey: "tipoId"});
 
+pokemon.belongsToMany(habilidad, { through: "pokemon_habilidades", foreignKey: "pokemonId", as: "habilidades" });
+habilidad.belongsToMany(pokemon, { through: "pokemon_habilidades", foreignKey: "habilidadId"});
+
 pokemonPersonalizado.belongsTo(naturaleza, { foreignKey: "naturalezaId", as: "naturaleza" });
 naturaleza.hasMany(pokemonPersonalizado, { foreignKey: "naturalezaId", as: "pokemonesPersonalizados" });
 

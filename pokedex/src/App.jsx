@@ -6,7 +6,7 @@ import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import Equipos from "./pages/Equipos";
 import CrearEquipo from "./pages/CrearEquipo";
-
+import AgregarPokemon from "./pages/AgregarPokemon";
 
 const RutaPrivada = ({ children }) => {
   const { estaAutenticado } = useAuth();
@@ -24,6 +24,7 @@ function App() {
 
           <Route path="/equipos" element={<RutaPrivada><Equipos /></RutaPrivada>} />
           <Route path="/equipos/crear" element={<RutaPrivada><CrearEquipo /></RutaPrivada>} />
+          <Route path="/equipos/:id/agregar/:slot" element={<RutaPrivada>< AgregarPokemon/></RutaPrivada>} />
         </Routes>
       </Router>
     </AuthProvider>
