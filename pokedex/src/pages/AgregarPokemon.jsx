@@ -61,11 +61,11 @@ function AgregarPokemon() {
         }
 
         try {
-            await api.post("/pokemones-personalizados", {
+            await api.post("/pokemon-personalizado", {
                 pokemonId: seleccionado.id,
                 equipoId: id,
                 posicion: Number(slot),
-                itemId: itemSeleccionado.id,
+                itemId: itemSeleccionado.id || itemSeleccionado,
                 habilidadId: habilidadSeleccionada,
                 naturalezaId: naturalezaSeleccionada,
                 evs,
@@ -143,18 +143,17 @@ function AgregarPokemon() {
                         <Form.Label>Item</Form.Label>
                         <div className="dropdown">
                             <button
-                                className="btn btn-outline-primary dropdown-toggle w-100 d-flex align-items-center justify-content-between"
+                                className="btn btn-outline-secondary dropdown-toggle w-100 d-flex align-items-center justify-content-between"
                                 type="button"
                                 data-bs-toggle="dropdown"
-                                aria-expanded="false"
                                 disabled={!seleccionado}
                             >
                                 {itemSeleccionado ? (
                                     <span className="d-flex align-items-center">
                                         <img
-                                            src={itemSeleccionado.imagen}
+                                            src={`http://localhost:3000${itemSeleccionado.imagen}`}
                                             alt={itemSeleccionado.nombre}
-                                            style={{ width: "25px", height: "25px", marginRight: "8px" }}
+                                            style={{ width: "24px", height: "24px", marginRight: "8px" }}
                                         />
                                         {itemSeleccionado.nombre}
                                     </span>
@@ -163,8 +162,15 @@ function AgregarPokemon() {
                             <ul className="dropdown-menu w-100">
                                 {items.map((item) => (
                                     <li key={item.id}>
-                                        <button className="dropdown-item d-flex align-items-center" onClick={() => setItemSeleccionado(item)}>
-                                            <img src={item.imagen} alt={item.nombre} style={{ width: "25px", height: "25px", marginRight: "10px" }} />
+                                        <button
+                                            className="dropdown-item d-flex align-items-center"
+                                            onClick={() => setItemSeleccionado(item)}
+                                        >
+                                            <img
+                                                src={`http://localhost:3000${item.imagen}`}
+                                                alt={item.nombre}
+                                                style={{ width: "24px", height: "24px", marginRight: "10px" }}
+                                            />
                                             {item.nombre}
                                         </button>
                                     </li>
