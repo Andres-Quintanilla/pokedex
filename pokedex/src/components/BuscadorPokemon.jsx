@@ -1,67 +1,77 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 
-function BuscadorPokemon({ seleccionado, setSeleccionado }) {
+function BuscadorPokemon({ setSeleccionado }) {
     const [busqueda, setBusqueda] = useState("");
     const [pokemones, setPokemones] = useState([]);
+    const [mostrarDropdown, setMostrarDropdown] = useState(false);
 
     useEffect(() => {
         api.get("/pokemones")
-            .then(res => setPokemones(res.data))
-            .catch(() => alert("Error al cargar pokemones"));
+        .then(res => setPokemones(res.data))
+        .catch(() => alert("Error al cargar pokemones"));
     }, []);
 
     const pokemonesFiltrados = pokemones.filter(p =>
         p.nombre.toLowerCase().includes(busqueda.toLowerCase())
     );
 
-    return (
-        <>
-            <input
-                type="text"
-                className="form-control mb-3"
-                placeholder="Buscar Pokémon..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-            />
+    const seleccionarPokemon = (pokemon) => {
+        setSeleccionado(pokemon);
+        setBusqueda("");
+        setMostrarDropdown(false);
+    };
 
-            <div className="d-flex gap-2 flex-wrap justify-content-center mb-4">
-                {pokemonesFiltrados.map(p => (
-                    <div
-                        key={p.id}
-                        onClick={() => setSeleccionado(p)}
-                        title={p.nombre}
-                        style={{
-                            width: "50px",
-                            height: "50px",
-                            borderRadius: "8px",
-                            overflow: "hidden",
-                            backgroundColor: "#f0f0f0",
-                            padding: "4px",
-                            border: seleccionado?.id === p.id ? "2px solid #007bff" : "2px solid transparent",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
-                        }}
-                    >
-                        <img
-                            src={`http://localhost:3000${p.imagen}`}
-                            alt={p.nombre}
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "/fallback.png";
-                            }}
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain"
-                            }}
-                        />
-                    </div>
-                ))}
-            </div>
-        </>
+    return (
+        <div style={{ position: "relative", maxWidth: "400px", margin: "0 auto" }}>
+        <input
+            type="text"
+            className="form-control mb-2"
+            placeholder="Buscar Pokémon..."
+            value={busqueda}
+            onChange={(e) => {
+            setBusqueda(e.target.value);
+            setMostrarDropdown(true);
+            }}
+            onFocus={() => setMostrarDropdown(true)}
+            onBlur={() => setTimeout(() => setMostrarDropdown(false), 200)}
+        />
+
+        {mostrarDropdown && pokemonesFiltrados.length > 0 && (
+            <ul
+            className="list-group"
+            style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                right: 0,
+                zIndex: 1000,
+                maxHeight: "250px",
+                overflowY: "auto"
+            }}
+            >
+            {pokemonesFiltrados.map(p => (
+                <li
+                key={p.id}
+                className="list-group-item list-group-item-action d-flex align-items-center"
+                style={{ cursor: "pointer" }}
+                onClick={() => seleccionarPokemon(p)}
+                >
+                <img
+                    src={`http://localhost:3000${p.imagen}`}
+                    alt={p.nombre}
+                    onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/fallback.png";
+                    }}
+                    style={{ width: "30px", height: "30px", marginRight: "10px", objectFit: "contain" }}
+                />
+                {p.nombre}
+                </li>
+            ))}
+            </ul>
+        )}
+        </div>
     );
 }
 
