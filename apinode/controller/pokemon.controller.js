@@ -40,7 +40,12 @@ const validarPokemon = (body) => {
 
 exports.listar = async (req, res) => {
     try{
-        const pokemones = await db.pokemon.findAll();
+        const pokemones = await db.pokemon.findAll({
+        include: {
+            model: db.tipo,
+            through: { attributes: [] }
+        }
+        });
         res.send(pokemones)
     }catch (error){
         res.status(500).send({message: "Error al obtener los Pokemones"});
@@ -369,7 +374,6 @@ exports.asignarTipos = async (req, res) => {
             return res.status(404).json({ message: "Pokémon no encontrado" });
         }
 
-        // Validar tipos
         const tipos = await db.tipo.findAll({
             where: {
                 nombre: [tipo1, tipo2].filter(Boolean)

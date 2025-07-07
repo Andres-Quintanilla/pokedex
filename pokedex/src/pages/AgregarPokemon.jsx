@@ -44,7 +44,8 @@ function AgregarPokemon() {
 
     useEffect(() => {
         if (seleccionado) {
-            api.get(`/pokemones/${seleccionado.id}/habilidades`)
+            console.log("Seleccionado:", seleccionado);
+            api.get(`/habilidades`)
                 .then(res => setHabilidades(res.data))
                 .catch(() => alert("Error al cargar habilidades"));
         }
@@ -104,7 +105,7 @@ function AgregarPokemon() {
                 itemId: Number(itemSeleccionado.id),
                 habilidadId: Number(habilidadSeleccionada),
                 naturalezaId: Number(naturalezaSeleccionada),
-                apodo: seleccionado.nombre,
+                apodo: apodo,
                 movimientos: movimientosSeleccionados
                     .filter((id) => id !== "" && !isNaN(id))
                     .map(Number),
@@ -121,8 +122,6 @@ function AgregarPokemon() {
                 iv_spd: ivs.spd,
                 iv_spe: ivs.spe
             });
-
-
             navigate("/equipos");
         } catch (error) {
             console.error(error);
@@ -139,7 +138,7 @@ function AgregarPokemon() {
         { key: "spe", label: "Speed" }
     ];
 
-    const evsRestantes = 510 - Object.values(evs).reduce((a, b) => a + b, 0);
+    const evsRestantes = 508 - Object.values(evs).reduce((a, b) => a + b, 0);
     const ivsRestantes = 186 - Object.values(ivs).reduce((a, b) => a + b, 0);
     
     return (
@@ -277,7 +276,7 @@ function AgregarPokemon() {
                     <h5 className="mb-3">Estadísticas</h5>
                     <div className="card p-4 mb-4">
                         <div className="mb-3 text-center">
-                            <p className="mb-1"><strong>EVs restantes:</strong> {evsRestantes} / 510</p>
+                            <p className="mb-1"><strong>EVs restantes:</strong> {evsRestantes} / 508</p>
                             <p className="mb-0"><strong>IVs restantes:</strong> {ivsRestantes} / 186</p>
                         </div>
 
