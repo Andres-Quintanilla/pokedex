@@ -10,7 +10,7 @@ function AgregarPokemon() {
 
     const [seleccionado, setSeleccionado] = useState(null);
     const [evs, setEvs] = useState({ hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 });
-    const [ivs, setIvs] = useState({ hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 });
+    const [ivs, setIvs] = useState({ hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 });
 
     const [items, setItems] = useState([]);
     const [itemSeleccionado, setItemSeleccionado] = useState("");
@@ -23,6 +23,18 @@ function AgregarPokemon() {
 
     const [naturalezas, setNaturalezas] = useState([]);
     const [naturalezaSeleccionada, setNaturalezaSeleccionada] = useState("");
+
+    const [apodo, setApodo] = useState("");
+
+
+    const statMap = {
+        hp: "hp",
+        atk: "ataque",
+        def: "defensa",
+        spa: "ataque_especial",
+        spd: "defensa_especial",
+        spe: "velocidad"
+    };
 
     useEffect(() => {
         api.get("/items").then(res => setItems(res.data));
@@ -46,8 +58,32 @@ function AgregarPokemon() {
         setIvs(prev => ({ ...prev, [stat]: Number(value) }));
     };
 
-    const calcularStatFinal = (base, ev, iv) => {
-        return Math.floor(((2 * base + iv + Math.floor(ev / 4)) * 50) / 100 + 5);
+    const calcularStatFinal = (stat, base, iv, ev) => {
+        if (!base) return 0;
+        const nivel = 100;
+        const naturaleza = naturalezas.find(n => n.id === Number(naturalezaSeleccionada));
+        const statReal = statMap[stat];
+        let modificador = 1;
+
+        if (naturaleza) {
+            if (naturaleza.aumenta === statReal) modificador = 1.1;
+            else if (naturaleza.disminuye === statReal) modificador = 0.9;
+        }
+
+        if (stat === "hp") {
+            return Math.floor(((2 * base + iv + Math.floor(ev / 4)) * nivel) / 100) + nivel + 10;
+        }
+
+        return Math.floor((((2 * base + iv + Math.floor(ev / 4)) * nivel) / 100 + 5) * modificador);
+    };
+
+    const getColorStat = (stat) => {
+        const naturaleza = naturalezas.find(n => n.id === Number(naturalezaSeleccionada));
+        const statReal = statMap[stat];
+        if (!naturaleza) return "black";
+        if (naturaleza.aumenta === statReal) return "red";
+        if (naturaleza.disminuye === statReal) return "blue";
+        return "black";
     };
 
     const handleAgregarPokemon = async () => {
@@ -63,15 +99,29 @@ function AgregarPokemon() {
         try {
             await api.post("/pokemon-personalizado", {
                 pokemonId: seleccionado.id,
-                equipoId: id,
+                equipoId: Number(id),
                 posicion: Number(slot),
-                itemId: itemSeleccionado.id || itemSeleccionado,
-                habilidadId: habilidadSeleccionada,
-                naturalezaId: naturalezaSeleccionada,
-                evs,
-                ivs,
-                movimientos: movimientosSeleccionados.filter(Boolean)
+                itemId: Number(itemSeleccionado.id),
+                habilidadId: Number(habilidadSeleccionada),
+                naturalezaId: Number(naturalezaSeleccionada),
+                apodo: seleccionado.nombre,
+                movimientos: movimientosSeleccionados
+                    .filter((id) => id !== "" && !isNaN(id))
+                    .map(Number),
+                ev_hp: evs.hp,
+                ev_atk: evs.atk,
+                ev_def: evs.def,
+                ev_spa: evs.spa,
+                ev_spd: evs.spd,
+                ev_spe: evs.spe,
+                iv_hp: ivs.hp,
+                iv_atk: ivs.atk,
+                iv_def: ivs.def,
+                iv_spa: ivs.spa,
+                iv_spd: ivs.spd,
+                iv_spe: ivs.spe
             });
+
 
             navigate("/equipos");
         } catch (error) {
@@ -86,9 +136,12 @@ function AgregarPokemon() {
         { key: "def", label: "Defense" },
         { key: "spa", label: "Sp. Atk" },
         { key: "spd", label: "Sp. Def" },
-        { key: "spe", label: "Speed" },
+        { key: "spe", label: "Speed" }
     ];
 
+    const evsRestantes = 510 - Object.values(evs).reduce((a, b) => a + b, 0);
+    const ivsRestantes = 186 - Object.values(ivs).reduce((a, b) => a + b, 0);
+    
     return (
         <div className="container py-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -121,6 +174,17 @@ function AgregarPokemon() {
                     </div>
                 ))}
             </div>
+
+            <Form.Group className="mb-4 mt-3">
+                <Form.Label>Apodo</Form.Label>
+                <Form.Control
+                    type="text"
+                    value={apodo}
+                    onChange={(e) => setApodo(e.target.value)}
+                    placeholder="Ingresa un apodo para tu Pokémon"
+                    disabled={!seleccionado}
+                />
+            </Form.Group>
 
             <Row>
                 <Col md={4}>
@@ -212,15 +276,27 @@ function AgregarPokemon() {
                 <Col md={8}>
                     <h5 className="mb-3">Estadísticas</h5>
                     <div className="card p-4 mb-4">
+                        <div className="mb-3 text-center">
+                            <p className="mb-1"><strong>EVs restantes:</strong> {evsRestantes} / 510</p>
+                            <p className="mb-0"><strong>IVs restantes:</strong> {ivsRestantes} / 186</p>
+                        </div>
+
                         <div className="row fw-bold mb-3 text-center align-items-center">
+                            <div className="col-2">Stat</div>
                             <div className="col-2">Base</div>
                             <div className="col-4">EVs</div>
                             <div className="col-2">IVs</div>
                             <div className="col-2">Final</div>
                         </div>
+
                         {stats.map(({ key, label }) => (
-                            <div className="row align-items-center mb-2" key={key}>
+                            <div className="row align-items-center mb-3" key={key}>
                                 <div className="col-2 text-center fw-semibold">{label}</div>
+
+                                <div className="col-2 text-center">
+                                    {seleccionado?.[key] ?? "-"}
+                                </div>
+
                                 <div className="col-4 d-flex align-items-center">
                                     <input
                                         type="number"
@@ -243,6 +319,7 @@ function AgregarPokemon() {
                                         style={{ flex: 1 }}
                                     />
                                 </div>
+
                                 <div className="col-2 d-flex justify-content-center">
                                     <Form.Select
                                         size="sm"
@@ -255,8 +332,12 @@ function AgregarPokemon() {
                                         ))}
                                     </Form.Select>
                                 </div>
-                                <div className="col-2 text-center fw-bold">
-                                    {calcularStatFinal(seleccionado?.[key] || 0, evs[key], ivs[key])}
+
+                                <div
+                                    className="col-2 text-center fw-bold"
+                                    style={{ color: getColorStat(key) }}
+                                >
+                                    {calcularStatFinal(key, seleccionado?.[key] || 0, ivs[key], evs[key])}
                                 </div>
                             </div>
                         ))}

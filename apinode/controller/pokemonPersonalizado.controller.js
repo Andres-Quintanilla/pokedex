@@ -129,6 +129,7 @@ exports.crear = async (req, res) => {
             itemId,
             habilidadId,
             naturalezaId,
+            posicion: req.body.posicion,
             ev_hp, ev_atk, ev_def, ev_spa, ev_spd, ev_spe,
             iv_hp, iv_atk, iv_def, iv_spa, iv_spd, iv_spe,
             stat_hp: stats.hp,
